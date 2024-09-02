@@ -4,12 +4,14 @@ const mongoose = require('mongoose');
 const path = require('path');
 const Listing = require('./modules/listing');
 const methodOverride = require('method-override');
+const ejsMate = require('ejs-mate');
 
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
 app.use(express.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname,'/public')));
 app.use(methodOverride('_method'));
-
+app.engine('ejs',ejsMate);
 main().catch(err => console.log(err));
 
 async function main() {
@@ -29,12 +31,6 @@ app.get('/listings',async(req,res)=>{
     res.render('listings/index.ejs',{allListings});
 })
 
-app.get('/listings/:id', async(req,res)=>{
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render('listings/show.ejs',{listing});
-})
-
 app.post('/listings/new', async(req,res)=>{
     let listing = req.body;
     const newListing = new Listing(listing);
@@ -45,6 +41,13 @@ app.post('/listings/new', async(req,res)=>{
 app.get('/listings/new',async(req,res)=>{
     res.render('listings/new.ejs',);
 })
+
+app.get('/listings/:id', async(req,res)=>{
+    let {id} = req.params;
+    const listing = await Listing.findById(id);
+    res.render('listings/show.ejs',{listing});
+})
+
 
 app.get('/listings/:id/edit', async(req,res)=>{
     let {id} = req.params;
