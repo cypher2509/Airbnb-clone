@@ -30,45 +30,36 @@ app.get('/',(req,res)=>{
     res.send('I am groot!');
 })
 
-app.get('/listings',async(req,res)=>{
+app.get('/listings',wrapAsync(async(req,res)=>{
     const allListings = await Listing.find({});
     res.render('listings/index.ejs',{allListings});
-})
+}));
 
-app.post('/listings/new', async(req,res,next)=>{
-    try{
+app.post('/listings/new', wrapAsync(async(req,res,next)=>{
         let listing = req.body;
         const newListing = new Listing(listing);
         await newListing.save()
         res.redirect('/listings');
-    }
-    catch(err){
-        next(err);
-    }
-})
+    
+}));
 
-app.get('/listings/new',async(req,res)=>{
+app.get('/listings/new',wrapAsync(async(req,res)=>{
     res.render('listings/new.ejs',);
-})
+}));
 
-app.get('/listings/:id', async(req,res)=>{
+app.get('/listings/:id', wrapAsync(async(req,res)=>{
     let {id} = req.params;
     const listing = await Listing.findById(id);
     res.render('listings/show.ejs',{listing});
-})
+}));
 
 
-app.get('/listings/:id/edit', async(req,res,next)=>{
-    try{
+app.get('/listings/:id/edit', wrapAsync(async(req,res,next)=>{
         let {id} = req.params;
         const listing = await Listing.findById(id);
         res.render('listings/edit.ejs',{listing});
-    }
-    catch(err){
-        next(err);
-    }
-    
-})
+
+}));
 
 app.put('/listings/:id', wrapAsync(async(req,res,next)=>{
         let {id} = req.params;
@@ -76,14 +67,13 @@ app.put('/listings/:id', wrapAsync(async(req,res,next)=>{
         console.log(listing);
         await Listing.findByIdAndUpdate(id, listing);
         res.redirect('/listings');
-    
 }));
 
-app.delete('/listings/:id',async(req,res)=>{
+app.delete('/listings/:id',wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndDelete(id);
     res.redirect('/listings'); 
-})
+}));
 // error handlers
 app.use((err,req,res,next)=>{
     res.send("Something went wrong.");
