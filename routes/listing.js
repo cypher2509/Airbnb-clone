@@ -5,6 +5,7 @@ const wrapAsync = require('../utils/wrapAsync.js');
 const ExpressError = require('../utils/ExpressError.js')
 const {listingSchema} = require('../schema.js');
 const Listing = require('../modules/listing');
+const {isLoggedIn, isOwner} = require('../middleware.js');
 //validations
 const validateListing = (req,res, next)=>{
     console.log(req.body);
@@ -22,8 +23,9 @@ router.get('/',wrapAsync(async(req,res)=>{
     res.render('listings/index.ejs',{allListings});
 }));
 //posting listings
-router.post('/', validateListing, wrapAsync(async(req,res,next)=>{
+router.post('/',isLoggedIn ,validateListing, wrapAsync(async(req,res,next)=>{
         let listing = req.body;
+        listing.owner = req.user._id;
         const newListing = new Listing(listing);
         await newListing.save()
         req.flash("success", "New Listing created!");
@@ -31,19 +33,20 @@ router.post('/', validateListing, wrapAsync(async(req,res,next)=>{
 }));
 
 //getting form listing page
-router.get('/new',wrapAsync(async(req,res)=>{
+router.get('/new',isLoggedIn ,wrapAsync(async(req,res)=>{
     res.render('listings/new.ejs',);
 }));
 
 //showing the listing
 router.get('/:id', wrapAsync(async(req,res)=>{
     let {id} = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
+    const listing = await Listing.findById(id).populate("reviews").populate("owner");
+    console.log(listing);
     res.render('listings/show.ejs',{listing});
 }));
 
 //getting form to edit listing 
-router.get('/:id/edit', wrapAsync(async(req,res,next)=>{
+router.get('/:id/edit',isLoggedIn, isOwner, wrapAsync(async(req,res,next)=>{
         let {id} = req.params;
         const listing = await Listing.findById(id);
         
@@ -52,7 +55,7 @@ router.get('/:id/edit', wrapAsync(async(req,res,next)=>{
 }));
 
 //modifying the listing
-router.put('/:id', wrapAsync(async(req,res)=>{
+router.put('/:id',isLoggedIn, wrapAsync(async(req,res)=>{
         let {id} = req.params;
         let listing = {...req.body.listing};
         await Listing.findByIdAndUpdate(id, listing);
@@ -61,7 +64,7 @@ router.put('/:id', wrapAsync(async(req,res)=>{
 }));
 
 //deleting the listing
-router.delete('/:id',wrapAsync(async(req,res)=>{
+router.delete('/:id',isLoggedIn,wrapAsync(async(req,res)=>{
     let {id} = req.params;
     await Listing.findByIdAndDelete(id);
     req.flash("success","Listing successfully Deleted.") 
