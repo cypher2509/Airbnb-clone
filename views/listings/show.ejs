@@ -8,18 +8,21 @@
                 <img src="<%= listing.image%>" style="height: 40vh; width: 18rem;" class="card-img-top" alt="...">
                 <br/>
                 <div class="card-body">
+                    owned by <i><%= listing.owner.username %></i> <br/><br/>
                   <%= listing.description %> <br/>
                   $<%= listing.price.toLocaleString('en-US')%><br/>
                   <%= listing.location%> <br/>
                   <%= listing.country %><br/> <br/>
-                <div class="show-btns">
-                    <a class="btn me-2 col-2 add-btn" href="/listings/<%=listing._id%>/edit">
-                        Edit
-                    </a>
-                    <form  method="post" action="/listings/<%=listing._id%>?_method=DELETE">
-                        <button class="btn btn-dark">Delete</button>
-                    </form>
-                </div>  
+                <% if(currUser && currUser._id.equals(listing.owner._id)){%>
+                    <div class="show-btns">
+                        <a class="btn me-2 col-2 add-btn" href="/listings/<%=listing._id%>/edit">
+                            Edit
+                        </a>
+                        <form  method="post" action="/listings/<%=listing._id%>?_method=DELETE">
+                            <button class="btn btn-dark">Delete</button>
+                        </form>
+                    </div>  
+                <%}%>
                 <hr/>
                 <h3> Leave a review</h3>
                 <form action="/listings/<%=listing._id%>/reviews" method="post" class="needs-validation" novalidate>
