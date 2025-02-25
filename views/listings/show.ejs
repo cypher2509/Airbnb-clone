@@ -47,16 +47,16 @@
                     <div class="row">
                         <% for(rv of listing.reviews){%>
                             <div class="card col-5 ms-3 mt-3">
-                                <div class="card-title">Airbnb User</div>
+                                <div class="card-title"><%= rv.author.username%></div>
                                 <div class="card-text"><%= rv.comment%></div>
                                 <div class="card-text"><%=rv.rating + " stars"%></div>
-
+                            </div>
+                            
+                            <% if (currUser._id.equals(rv.author._id)){%>
                                 <form action="/listings/<%= listing._id%>/reviews/<%=rv._id%>?_method=DELETE" method="post">
                                     <button type="submit" class="btn btn-dark"> Delete</button>
                                 </form>
-                            </div>
-                            
-                        <%}%>
+                        <%}}%>
                     </div>
                 </div>
             </div>

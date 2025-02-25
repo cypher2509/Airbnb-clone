@@ -1,4 +1,5 @@
 const Listing = require("./modules/listing");
+const review = require("./modules/review");
 
 module.exports.isLoggedIn = (req, res,next)=>{
     if(!req.isAuthenticated()){
@@ -20,6 +21,16 @@ module.exports.isOwner = (req,res,next)=>{
     let {id} = req.params;
     let listing = Listing.findById(id);
     if(!listing.owner.equals(req.locals.currUser._id)){
+        req.flash("danger",'You dont have the authorization to make changes for this post.')
+        return res.redirect(`/listings/${id}`);
+    }
+    next();
+}
+
+module.exports.isReviewAuthor = (req,res,next)=>{
+    let {id} = req.params;
+    let review = review.findById(id);
+    if(!review.author.equals(req.locals.currUser._id)){
         req.flash("danger",'You dont have the authorization to make changes for this post.')
         return res.redirect(`/listings/${id}`);
     }
