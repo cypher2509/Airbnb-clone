@@ -21,7 +21,6 @@ module.exports.newListingsForm = async(req,res)=>{
 module.exports.getListing = async(req,res)=>{
     let {id} = req.params;
     const listing = await Listing.findById(id).populate({path: "reviews" , populate: {path: 'author'}}).populate("owner");
-    console.log(listing);
     res.render('listings/show.ejs',{listing});
 }
 

@@ -28,7 +28,26 @@
                 <form action="/listings/<%=listing._id%>/reviews" method="post" class="needs-validation" novalidate>
                     <div> 
                         <label class="form-label" for="review[rating]">Rating</label>
-                        <input type="range" min="1" max="5" id ='review[rating]' name="review[rating]"></input>
+                        <fieldset class="starability-slot">
+                            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
+                      
+                            <input type="radio" id="rate1" name="review[rating]" value="1" />
+                            <label for="rate1">1 star.</label>
+                      
+                            <input type="radio" id="rate2" name="review[rating]" value="2" />
+                            <label for="rate2">2 stars.</label>
+                      
+                            <input type="radio" id="rate3" name="review[rating]" value="3" />
+                            <label for="rate3">3 stars.</label>
+                      
+                            <input type="radio" id="rate4" name="review[rating]" value="4" />
+                            <label for="rate4">4 stars.</label>
+                      
+                            <input type="radio" id="rate5" name="review[rating]" value="5" />
+                            <label for="rate5">5 stars.</label>
+                      
+                            <span class="starability-focus-ring"></span>
+                          </fieldset>
                     </div>
                     <div>
                         <label class="form-label" for="review[comment]">Comment</label>
@@ -48,11 +67,11 @@
                         <% for(rv of listing.reviews){%>
                             <div class="card col-5 ms-3 mt-3">
                                 <div class="card-title"><%= rv.author.username%></div>
+                                <p class="starability-result" data-rating= "<%=rv.rating%>"></p>                                
                                 <div class="card-text"><%= rv.comment%></div>
-                                <div class="card-text"><%=rv.rating + " stars"%></div>
                             </div>
                             
-                            <% if (currUser._id.equals(rv.author._id)){%>
+                            <% if (currUser && currUser._id.equals(rv.author._id)){%>
                                 <form action="/listings/<%= listing._id%>/reviews/<%=rv._id%>?_method=DELETE" method="post">
                                     <button type="submit" class="btn btn-dark"> Delete</button>
                                 </form>
