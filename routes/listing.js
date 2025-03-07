@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+const multer = require('multer');
+const upload = multer({dest: 'uploads/'})
+
 const wrapAsync = require('../utils/wrapAsync.js');
 const ExpressError = require('../utils/ExpressError.js');
 
@@ -21,8 +24,11 @@ const validateListing = (req,res, next)=>{
 //getting listings
 router.get('/',wrapAsync(listingsController.index));
 //posting listings
-router.post('/',isLoggedIn ,validateListing, wrapAsync(listingsController.newListings));
+// router.post('/',isLoggedIn ,validateListing, wrapAsync(listingsController.newListings));
 
+router.post('/',upload.single('image'),(req,res) => {
+    res.send(req.file);
+})
 //getting form listing page
 router.get('/new',isLoggedIn ,wrapAsync(listingsController.newListingsForm));
 
